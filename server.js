@@ -19,7 +19,7 @@ app.post('/search-vin', async (req, res) => {
 });
 
 async function searchVinOnExternalSite(vin) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     try {
