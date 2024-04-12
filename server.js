@@ -1,6 +1,7 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
@@ -19,7 +20,18 @@ app.post('/search-vin', async (req, res) => {
 });
 
 async function searchVinOnExternalSite(vin) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ 
+        args: [
+            "--disable-setuid-sandbox",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote",
+          ],
+          executablePath:
+            process.env.NODE_ENV === "production"
+              ? process.env.PUPPETEER_EXECUTABLE_PATH
+              : puppeteer.executablePath(),
+    });
     const page = await browser.newPage();
 
     try {
