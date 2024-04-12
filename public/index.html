@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIN Search</title>
+</head>
+<body>
+    <h1>VIN Search</h1>
+    <input type="text" id="vin" placeholder="Enter VIN">
+    <button id="searchVin">Search</button>
+    <img id="loader" src="loading.gif" style="display: none;" alt="Loading...">
+    <div id="success"></div>
+    <div id="make"></div>
+
+    <script>
+        document.getElementById('searchVin').addEventListener('click', async () => {
+            document.getElementById('success').innerText = '';
+            document.getElementById('make').innerText = '';
+            document.getElementById('loader').style.display = 'block';
+            const vin = document.getElementById('vin').value.toUpperCase();     
+            try {
+                const response = await fetch('/search-vin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vin }),
+                });
+
+                const data = await response.json();
+                //console.log('AAA' + JSON.stringify(data));
+                if (data.result) {
+                    if ('success' in data.result) {
+                        document.getElementById('success').innerText = data.result.success+' We have found records for this vehicle';
+                    } else {
+                        document.getElementById('success').innerText = 'No Record Found';
+                    }
+
+                    if ('make' in data.result) {
+                        document.getElementById('make').innerText = data.result.make;
+                    } else {
+                        document.getElementById('make').innerText = 'No Record Found';
+                    }
+                } else {
+                    document.getElementById('success').innerText = 'No Record Found';
+                    document.getElementById('make').innerText = 'No Record Found';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            document.getElementById('loader').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
